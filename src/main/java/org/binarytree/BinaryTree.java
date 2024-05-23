@@ -14,45 +14,6 @@ public class BinaryTree<T> {
             insertNode(key, new Node<>(key, data));
     }
 
-    public List<Node<T>> inOrderTraverse(Node<T> focusNode) {
-        return inOrderTraverse(focusNode, new ArrayList<>());
-    }
-
-    private List<Node<T>> inOrderTraverse(Node<T> focusNode, List<Node<T>> items) {
-        if (focusNode != null) {
-            inOrderTraverse(focusNode.left, items);
-            items.add(focusNode);
-            inOrderTraverse(focusNode.right, items);
-        }
-        return items;
-    }
-
-    public List<Node<T>> preOrderTraverse(Node<T> focusNode) {
-        return preOrderTraverse(focusNode, new ArrayList<>());
-    }
-
-    private List<Node<T>> preOrderTraverse(Node<T> focusNode, List<Node<T>> items) {
-        if (focusNode != null) {
-            items.add(focusNode);
-            preOrderTraverse(focusNode.left, items);
-            preOrderTraverse(focusNode.right, items);
-        }
-        return items;
-    }
-
-    public List<Node<T>> postOrderTraverse(Node<T> focusNode) {
-        return postOrderTraverse(focusNode, new ArrayList<>());
-    }
-
-    private List<Node<T>> postOrderTraverse(Node<T> focusNode, List<Node<T>> items) {
-        if (focusNode != null) {
-            postOrderTraverse(focusNode.left, items);
-            postOrderTraverse(focusNode.right, items);
-            items.add(focusNode);
-        }
-        return items;
-    }
-
     public Node<T> findNode(int key) {
         Node<T> focusNode = root;
 
@@ -63,6 +24,19 @@ public class BinaryTree<T> {
         }
         return focusNode;
     }
+
+    public List<Node<T>> inOrderTraverse(Node<T> focusNode) {
+        return inOrderTraverse(focusNode, new ArrayList<>());
+    }
+
+    public List<Node<T>> postOrderTraverse(Node<T> focusNode) {
+        return postOrderTraverse(focusNode, new ArrayList<>());
+    }
+
+    public List<Node<T>> preOrderTraverse(Node<T> focusNode) {
+        return preOrderTraverse(focusNode, new ArrayList<>());
+    }
+
 
     public boolean remove(int key) {
         Node<T> current = root;
@@ -81,12 +55,9 @@ public class BinaryTree<T> {
             }
             if(current == null) return false;
         }
-        if (current.left == null && current.right == null)
-            resetHead(current, leftNode, parent);
-        else if(current.right == null)
-            shift(current, current.left, leftNode, parent);
-        else if(current.left == null)
-            shift(current, current.right, leftNode, parent);
+        if (current.left == null && current.right == null) resetHead(current, leftNode, parent);
+        else if(current.right == null) shift(current, current.left, leftNode, parent);
+        else if(current.left == null) shift(current, current.right, leftNode, parent);
         else extract(current, leftNode, parent);
         return true;
     }
@@ -95,40 +66,6 @@ public class BinaryTree<T> {
         Node<T> replacement = getReplacement(focusNode);
         shift(focusNode, replacement, isALeftChild, parent);
         replacement.left = focusNode.left;
-    }
-
-    private void shift(Node<T> focusNode, Node<T> nextNode, boolean isALeftChild, Node<T> parent) {
-        if (focusNode == root) root = nextNode;
-        else if (isALeftChild) parent.left = nextNode;
-        else parent.right = nextNode;
-    }
-
-    private void resetHead(Node<T> focusNode, boolean isALeftChild, Node<T> parent) {
-        shift(focusNode, null, isALeftChild, parent);
-    }
-
-    private void insertNode(int key, Node<T> newNode) {
-        Node<T> focusNode = root;
-        Node<T> parent;
-        while (true) {
-            parent = focusNode;
-            if(key < focusNode.key)
-                focusNode = insertLeft(newNode, focusNode.left, parent);
-            else
-                focusNode = insertRight(newNode, focusNode.right, parent);
-            if (focusNode == null)
-                return;
-        }
-    }
-
-    private static <T>Node<T> insertRight(Node<T> newNode, Node<T> focusNode, Node<T> parent) {
-        if(focusNode == null) parent.right = newNode;
-        return focusNode;
-    }
-
-    private static <T>Node<T> insertLeft(Node<T> newNode, Node<T> focusNode, Node<T> parent) {
-        if (focusNode == null) parent.left = newNode;
-        return focusNode;
     }
 
     private Node<T> getReplacement(Node<T> replacedNode) {
@@ -145,6 +82,62 @@ public class BinaryTree<T> {
             replacement.right = replacedNode.right;
         }
         return replacement;
+    }
+
+    private static <T>Node<T> insertLeft(Node<T> newNode, Node<T> focusNode, Node<T> parent) {
+        if (focusNode == null) parent.left = newNode;
+        return focusNode;
+    }
+
+    private static <T>Node<T> insertRight(Node<T> newNode, Node<T> focusNode, Node<T> parent) {
+        if(focusNode == null) parent.right = newNode;
+        return focusNode;
+    }
+
+    private void insertNode(int key, Node<T> newNode) {
+        Node<T> focusNode = root;
+        while (true) {
+            if(key < focusNode.key) focusNode = insertLeft(newNode, focusNode.left, focusNode);
+            else focusNode = insertRight(newNode, focusNode.right, focusNode);
+            if (focusNode == null) return;
+        }
+    }
+
+    private List<Node<T>> inOrderTraverse(Node<T> focusNode, List<Node<T>> items) {
+        if (focusNode != null) {
+            inOrderTraverse(focusNode.left, items);
+            items.add(focusNode);
+            inOrderTraverse(focusNode.right, items);
+        }
+        return items;
+    }
+
+    private List<Node<T>> postOrderTraverse(Node<T> focusNode, List<Node<T>> items) {
+        if (focusNode != null) {
+            postOrderTraverse(focusNode.left, items);
+            postOrderTraverse(focusNode.right, items);
+            items.add(focusNode);
+        }
+        return items;
+    }
+
+    private List<Node<T>> preOrderTraverse(Node<T> focusNode, List<Node<T>> items) {
+        if (focusNode != null) {
+            items.add(focusNode);
+            preOrderTraverse(focusNode.left, items);
+            preOrderTraverse(focusNode.right, items);
+        }
+        return items;
+    }
+
+    private void resetHead(Node<T> focusNode, boolean isALeftChild, Node<T> parent) {
+        shift(focusNode, null, isALeftChild, parent);
+    }
+
+    private void shift(Node<T> focusNode, Node<T> nextNode, boolean isALeftChild, Node<T> parent) {
+        if (focusNode == root) root = nextNode;
+        else if (isALeftChild) parent.left = nextNode;
+        else parent.right = nextNode;
     }
 
     public static class Node<T> {
